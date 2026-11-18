@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#17191c">
+<title>Ondier</title>
+<link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="/style.css">
+<script src="/hls.js" defer></script>
+<script src="/app.js" defer></script>
+</head>
+<body class="is-signed-out">
+<a href="#main" class="skip-link">Skip to content</a>
+<div class="shell">
+  <aside class="sidebar">
+    <button class="brand" type="button" id="home" aria-label="Ondier Home">
+      <img src="/logo.png" alt="" width="32" height="32">Ondier
+    </button>
+    <nav aria-label="Podcasts" id="libraryNav" hidden>
+      <button id="search" type="button" class="nav-item">
+        <span class="icon icon-search" aria-hidden="true"></span>Search
+      </button>
+      <button id="library" type="button" class="nav-item" aria-current="page">
+        <span class="icon icon-library" aria-hidden="true"></span>Library
+      </button>
+      <button id="subscriptions" type="button" class="nav-item">
+        <span class="icon icon-feed" aria-hidden="true"></span>Subscriptions
+      </button>
+      <button id="latest" type="button" class="nav-item">
+        <span class="icon icon-recent" aria-hidden="true"></span>Latest
+      </button>
+      <button id="history" type="button" class="nav-item">
+        <span class="icon icon-history" aria-hidden="true"></span>History
+      </button>
+      <button id="saved" type="button" class="nav-item">
+        <span class="icon icon-bookmark" aria-hidden="true"></span>Saved Episodes
+      </button>
+      <button id="queue" type="button" class="nav-item">
+        <span class="icon icon-list" aria-hidden="true"></span>Up Next
+      </button>
+      <button id="lists" type="button" class="nav-item">
+        <span class="icon icon-list" aria-hidden="true"></span>Playlists
+      </button>
+    </nav>
+  </aside>
+  <div class="workspace">
+    <header class="toolbar" id="toolbar" hidden>
+      <span id="pageTitle" class="toolbar-title">Library</span>
+      <div class="toolbar-actions">
+        <form id="archiveSearch" class="toolbar-search" role="search">
+          <label class="visually-hidden" for="archiveTerm">Search episodes</label>
+          <button type="submit" class="search-symbol" aria-label="Search episodes"><span class="icon icon-search" aria-hidden="true"></span></button>
+          <input type="search" id="archiveTerm" name="q" maxlength="200" placeholder="Search Episodes">
+          <kbd aria-hidden="true">⌘K</kbd>
+        </form>
+        <button id="discover" type="button" class="toolbar-icon" title="Add Podcast" aria-label="Add Podcast">
+          <span class="icon icon-plus" aria-hidden="true"></span>
+        </button>
+        <button id="tools" type="button" class="toolbar-icon" title="Settings" aria-label="Settings">
+          <span class="icon icon-options" aria-hidden="true"></span>
+        </button>
+      </div>
+    </header>
+    <main id="main" tabindex="-1"><p role="status">Loading library…</p></main>
+    <main id="videoPage" class="video-page" aria-labelledby="videoTitle" tabindex="-1" hidden></main>
+  </div>
+</div>
+<footer id="player" class="player" aria-label="Audio player" hidden>
+  <div class="player-identity">
+    <img id="nowArt" class="cover" src="/logo.png" alt="" width="44" height="44">
+    <div class="player-text">
+      <strong id="now"></strong>
+      <span id="nowShow"></span>
+    </div>
+  </div>
+  <div class="transport">
+    <button type="button" id="backward" class="skip-button" aria-label="Back 15 seconds" title="Back 15 seconds">−15</button>
+    <button type="button" id="playPause" class="round-button primary" aria-label="Play" title="Play">
+      <span id="playIcon" class="icon icon-play" aria-hidden="true"></span>
+    </button>
+    <button type="button" id="forward" class="skip-button" aria-label="Forward 30 seconds" title="Forward 30 seconds">+30</button>
+  </div>
+  <div class="timeline">
+    <span id="elapsed">0:00</span>
+    <input type="range" id="seek" min="0" max="0" step="1" value="0" aria-label="Playback position" aria-valuetext="0:00" disabled>
+    <span id="duration">0:00</span>
+  </div>
+  <div class="player-tools">
+    <label class="visually-hidden" for="rate">Playback speed</label>
+    <select id="rate" title="Playback speed">
+      <option value="0.75">0.75×</option><option value="1" selected>1×</option>
+      <option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="1.75">1.75×</option><option value="2">2×</option>
+    </select>
+    <button type="button" id="audioOptions" class="toolbar-icon" title="Playback Options" aria-label="Playback Options">
+      <span class="icon icon-options" aria-hidden="true"></span>
+    </button>
+    <details class="volume-control">
+      <summary title="Volume" aria-label="Volume"><span class="icon icon-volume" aria-hidden="true"></span></summary>
+      <label class="visually-hidden" for="volume">Volume</label>
+      <input type="range" id="volume" min="0" max="1" step="0.05" value="1">
+    </details>
+    <button type="button" id="closePlayer" class="toolbar-icon" title="Close Player" aria-label="Close Player">
+      <span class="icon icon-close" aria-hidden="true"></span>
+    </button>
+  </div>
+  <span id="playbackStatus" class="visually-hidden" role="status"></span>
+  <audio id="audio" preload="metadata"></audio>
+</footer>
+<dialog id="dialog">
+  <div id="dialogContent"></div>
+  <form class="dialog-actions" method="dialog"><button class="quiet">Done</button></form>
+</dialog>
+<template id="cover"><img class="cover" alt="" loading="lazy" src="/logo.png"></template>
+</body>
+</html>

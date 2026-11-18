@@ -1,0 +1,11 @@
+.git
+.env
+.env.*
+data
+.publication
+docs
+tests
+README.local.md
+__pycache__
+*.py[cod]
+*.zip

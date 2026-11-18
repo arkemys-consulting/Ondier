@@ -1,0 +1,108 @@
+{
+  "https://api.octopus.saooti.com/rss/playlist/500.rss": {
+    "profile": "c-dans-l-air",
+    "youtube": "https://www.youtube.com/@cdanslairofficiel/videos",
+    "channel": "UCvg4_wSz4Cmo4xRPXaKU47A",
+    "franceCatalogues": [
+      "https://www.france.tv/france-5/c-dans-l-air/",
+      "https://www.france.tv/france-5/l-invite-de-c-dans-l-air/"
+    ],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  },
+  "https://api.octopus.saooti.com/rss/playlist/502.rss": {
+    "profile": "c-ce-soir",
+    "youtube": "https://www.youtube.com/@ccesoir/videos",
+    "channel": "UC1UUvhau_2V8ETvHfwkUQwg",
+    "franceCatalogues": [
+      "https://www.france.tv/france-5/c-ce-soir/"
+    ],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": true,
+    "rules": {}
+  },
+  "https://api.octopus.saooti.com/rss/emission/14548.rss": {
+    "profile": "c-politique",
+    "youtube": "https://www.youtube.com/@c_politique/videos",
+    "channel": "UCZh4i5HT_r-9RcCOXMxuGiQ",
+    "franceCatalogues": [
+      "https://www.france.tv/france-5/c-politique/",
+      "https://www.france.tv/france-5/c-politique-la-suite/"
+    ],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  },
+  "https://feeds.podcastics.com/podcastics/podcasts/rss/1494_a91e27943b2d3d39053de2f00bde02c8.rss": {
+    "profile": "rivenzi",
+    "youtube": "https://www.youtube.com/@rivenzi-lecercledelhistoire/videos",
+    "channel": "UCrVLHLMZWJVS5nr07fs1FDg",
+    "franceCatalogues": [],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  },
+  "https://feeds.acast.com/public/shows/62c823b8f93e7c0012e9b303": {
+    "profile": "storiavoce",
+    "youtube": "https://www.youtube.com/@storiavoce2091/videos",
+    "channel": "UCi7Dt1r__bWKNKvNcUrYXPg",
+    "franceCatalogues": [],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  },
+  "https://www.arteradio.com/xml_sound_emission?emissionname=%2228%20Minutes%22&partner=applepodcast": {
+    "profile": "28-minutes",
+    "youtube": "https://www.youtube.com/@28minutesarte/videos",
+    "channel": "UC8EzKGkEiusTm7g0mTfkWkg",
+    "franceCatalogues": [],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  },
+  "https://feed.ausha.co/RD02Jf7dkDWp": {
+    "profile": "focus-fondamental",
+    "youtube": "https://www.youtube.com/@baggr-fr/videos",
+    "channel": "UCzYp70_hh1Nfqp297AF1S7w",
+    "franceCatalogues": [],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  },
+  "https://api.octopus.saooti.com/rss/emission/14523.rss": {
+    "profile": "la-grande-librairie",
+    "youtube": "",
+    "channel": "",
+    "franceCatalogues": [
+      "https://www.france.tv/france-5/la-grande-librairie/"
+    ],
+    "providerOrder": [
+      "franceTV",
+      "youtube"
+    ],
+    "fallback": false,
+    "rules": {}
+  }
+}

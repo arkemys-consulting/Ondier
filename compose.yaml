@@ -1,0 +1,22 @@
+name: ondier
+services:
+  ondier:
+    build: .
+    image: ondier-server:local
+    ports:
+      - '127.0.0.1:${ONDIER_PORT:-8788}:8788'
+    environment:
+      ONDIER_ORIGIN: ${ONDIER_ORIGIN:?Run install.sh to configure the installation}
+      ONDIER_ACCESS_KEY: ${ONDIER_ACCESS_KEY:?Run install.sh to generate an installation key}
+      ONDIER_SETUP_KEY_FILE: /data/setup-key
+      ONDIER_EMPTY_LIBRARY: '1'
+      QUIRE_YOUTUBE_API_KEY: ${QUIRE_YOUTUBE_API_KEY:-}
+      ONDIER_WORKERS: ${ONDIER_WORKERS:-1}
+    volumes:
+      - './data:/data'
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
