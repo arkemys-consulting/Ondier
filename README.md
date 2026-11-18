@@ -26,7 +26,7 @@
 
 ## What you can do
 
-- **Build one podcast library.** Follow public RSS feeds, find shows through Apple Podcasts, or import your subscriptions from OPML. Export them again when you want to use another player.
+- **Build one podcast library.** Follow public RSS feeds and YouTube channels, find shows through Apple Podcasts, or import your subscriptions from OPML. Export them again when you want to use another player.
 - **Keep your place across devices.** Sync listening positions, saved episodes and your up-next queue between the browser and clients that support Ondier’s API. gPodder-compatible clients can sync subscriptions and playback progress.
 - **Find an episode you heard before.** Search titles, descriptions and publisher-provided transcripts. Ondier retains indexed episode metadata when a publisher removes an episode from its feed.
 - **Make room for longer listening.** Create manual collections or smart playlists filtered by show, category, keywords, duration and listening status. Set a minimum episode duration for a subscription.
