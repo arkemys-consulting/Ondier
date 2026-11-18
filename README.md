@@ -31,7 +31,7 @@
 - **Find an episode you heard before.** Search titles, descriptions and publisher-provided transcripts. Ondier retains indexed episode metadata when a publisher removes an episode from its feed.
 - **Make room for longer listening.** Create manual collections or smart playlists filtered by show, category, keywords, duration and listening status. Set a minimum episode duration for a subscription.
 - **Bring audio and video together.** Follow YouTube channels and configure matching against official YouTube or France.tv releases, including provider order and per-episode overrides.
-- **Keep other players in the loop.** Share a private RSS feed for a show or playlist, or connect through gPodder sync. Named API keys can expire and be revoked independently.
+- **Keep other players in the loop.** Share a private RSS feed for a show or playlist, or connect through gPodder sync.
 
 ## From your desk to your phone
 
