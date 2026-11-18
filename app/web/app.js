@@ -1068,7 +1068,7 @@ async function keys() {
     if (!dialog.open || !signedIn) return;
     const form = node('form', '', 'account-form');
     const name = node('input');
-    name.required = true; name.maxLength = 80; name.placeholder = 'Quire';
+    name.required = true; name.maxLength = 80; name.placeholder = 'Roan';
     const nameLabel = node('label', 'Name'); nameLabel.append(name);
     const expiry = node('select');
     for (const [days, label] of [[0, 'Never'], [30, '30 days'], [90, '90 days'], [365, '1 year']]) {

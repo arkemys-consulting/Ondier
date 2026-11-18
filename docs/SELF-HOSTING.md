@@ -18,7 +18,7 @@ For an existing installation, edit `ONDIER_PORT` and `ONDIER_ORIGIN` in `.env`, 
 
 Place a trusted HTTPS reverse proxy or a private-network HTTPS service in front of the loopback port. Set `ONDIER_ORIGIN` in `.env` to the exact HTTPS address used by your browser and clients, then run `bash install.sh` again.
 
-Use the same address in Quire and other clients. A changed installation address requires updating those clients. Retain the installation key when moving your data.
+Use the same address in Roan and other clients. A changed installation address requires updating those clients. Retain the installation key when moving your data.
 
 ## YouTube and video matching
 

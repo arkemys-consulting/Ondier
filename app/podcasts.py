@@ -106,7 +106,7 @@ def change_subscription(state, mutation):
         normalized = subscription(item)
         previous = current.get(key, {})
         if DURATION_OVERRIDE in previous:
-            # Older Quire versions can change notifications without sending this preference.
+            # Older Roan versions can change notifications without sending this preference.
             normalized.setdefault(DURATION_OVERRIDE, previous[DURATION_OVERRIDE])
         current[key] = normalized
     elif operation == "remove":

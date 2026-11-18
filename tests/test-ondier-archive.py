@@ -84,7 +84,7 @@ class OndierArchiveTest(unittest.TestCase):
         self.assertFalse(server.ARCHIVE.page(original_state, mode='latest')[1])
         self.assertEqual(episode['id'], server.ARCHIVE.match(show['id'], 'long', '')['id'])
         _, token = server.ACCOUNTS.create('test', secrets.token_urlsafe(18))
-        valid = server.ACCOUNTS.new_key('Quire', 0)
+        valid = server.ACCOUNTS.new_key('Roan', 0)
         cookie = {'Cookie': f'{server.ACCOUNT_COOKIE}={token}', 'Origin': server.ORIGIN}
         bearer = {'Authorization': 'Bearer ' + valid['key']}
         http = server.ThreadingHTTPServer(('127.0.0.1', 0), server.Handler)

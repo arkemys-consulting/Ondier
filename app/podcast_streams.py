@@ -1,4 +1,4 @@
-"""Open verified podcast replays and relay YouTube HLS for Quire clients."""
+"""Open verified podcast replays and relay YouTube HLS for Roan clients."""
 
 from dataclasses import dataclass, field
 from http.client import HTTPException

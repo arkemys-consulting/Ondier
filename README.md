@@ -63,7 +63,7 @@ The [self-hosting guide](docs/SELF-HOSTING.md) covers another port, HTTPS and re
 
 ## Connect your player
 
-**Quire.** In Ondier, open **Settings → API Keys** and create a named key. Enter your Ondier address and that key in Quire’s Ondier settings. Quire can use the shared library, playback positions, saved episodes, queue and video preferences.
+**Roan.** In Ondier, open **Settings → API Keys** and create a named key. Enter your Ondier address and that key in Roan’s Ondier settings. Roan can use the shared library, playback positions, saved episodes, queue and video preferences.
 
 **gPodder-compatible apps.** Open **Settings → Sync Setup** for the server address and app password. Ondier supports the gPodder API and a Nextcloud gPodder Sync login flow.
 
