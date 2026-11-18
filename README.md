@@ -36,9 +36,9 @@
 ## From your desk to your phone
 
 <p align="center">
-  <a href="docs/screenshots/episode.png"><img src="docs/screenshots/episode.png" width="720" alt="Ondier show page with its description and playable episodes"></a>
+  <a href="docs/screenshots/episode.png"><img src="docs/screenshots/episode.png" width="600" alt="Ondier show page with its description and playable episodes"></a>
   &nbsp;
-  <a href="docs/screenshots/mobile.png"><img src="docs/screenshots/mobile.png" width="240" alt="Ondier podcast library in a mobile browser"></a>
+  <a href="docs/screenshots/mobile.png"><img src="docs/screenshots/mobile.png" width="185" alt="Ondier podcast library in a mobile browser"></a>
 </p>
 
 The web player includes playback speed, skip controls, saved episodes and an up-next queue. Use the same server address in a compatible client to continue listening there.
