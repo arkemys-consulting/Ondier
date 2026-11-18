@@ -44,7 +44,7 @@ function anchor(text, url, className = '') {
 function cover(url) {
   const image = document.querySelector('#cover').content.firstElementChild.cloneNode();
   if (url && url.startsWith('https://')) image.src = url;
-  image.addEventListener('error', () => {image.src = '/logo.png';}, {once:true}); return image;
+  image.addEventListener('error', () => {image.src = '/logo.svg';}, {once:true}); return image;
 }
 async function api(path, body, method = body === undefined ? 'GET' : 'POST') {
   const response = await fetch(path, {method, headers: body === undefined ? {} : {'Content-Type':'application/json'}, body: JSON.stringify(body)});
@@ -339,7 +339,7 @@ audio.addEventListener('play', () => {
   nowShow.textContent = nowShow.dataset.title ?? '';
 });
 nowArt.addEventListener('error', () => {
-  if (!nowArt.src.endsWith('/logo.png')) nowArt.src = '/logo.png';
+  if (!nowArt.src.endsWith('/logo.svg')) nowArt.src = '/logo.svg';
 });
 function savePlayback() {
   if (!playing || !audioReady || !Number.isFinite(audio.currentTime) || !audio.currentSrc) return;
@@ -385,7 +385,7 @@ async function play(ep, show) {
   player.hidden = false;
   scrubbing = false;
   document.body.classList.add('has-player');
-  nowArt.src = show.artwork?.startsWith('https://') ? show.artwork : '/logo.png';
+  nowArt.src = show.artwork?.startsWith('https://') ? show.artwork : '/logo.svg';
   document.querySelector('#now').textContent = ep.title;
   nowShow.dataset.title = show.title;
   nowShow.textContent = show.title;

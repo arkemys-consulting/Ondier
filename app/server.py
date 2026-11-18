@@ -30,7 +30,7 @@ import podcast_youtube_audio as youtube
 import video_matching
 
 WEB = Path(__file__).parent / 'web'
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 EDITORIAL = Path(__file__).parent / 'editorial'
 ORIGIN = os.environ['ONDIER_ORIGIN'].rstrip('/')
 OWNER = os.environ.get('ONDIER_OWNER', '').casefold()
@@ -527,7 +527,7 @@ class Handler(BaseHTTPRequestHandler):
                     if status != 200:
                         return self.reply(status, data)
                     return podcast_streams.send_resource(self, data['path'], head=self.command == 'HEAD')
-                if path in ('/', '/app.js', '/style.css', '/logo.png', '/hls.js'):
+                if path in ('/', '/app.js', '/style.css', '/logo.svg', '/logo.png', '/hls.js'):
                     file = WEB / (path[1:] or 'index.html')
                     return self.send_body(200, file.read_bytes(), mimetypes.guess_type(file)[0], head=self.command == 'HEAD')
             if path.startswith('/api/2/') or path.startswith(SIMPLE_SYNC):
