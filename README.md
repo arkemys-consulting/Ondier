@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/screenshots/ondier-icon.png" width="96" height="96" alt="Ondier icon">
+  <img src="docs/assets/ondier-icon.svg" width="96" height="96" alt="Ondier icon">
 </p>
 
 <h1 align="center">Ondier</h1>
