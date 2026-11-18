@@ -4,7 +4,7 @@
 
 <h1 align="center">Ondier</h1>
 
-<p align="center"><strong>Keep your podcasts and listening progress on your own server.</strong></p>
+<p align="center"><strong>Keep the podcasts and Youtube channels you follow on your own server.</strong></p>
 
 <p align="center">
   Follow RSS feeds and YouTube channels, listen in your browser, and pick up where you left off in a gPodder-compatible player. Ondier runs in a single Docker container.
