@@ -9,3 +9,6 @@ README.local.md
 __pycache__
 *.py[cod]
 *.zip
+
+.production
+compose.production.yaml
