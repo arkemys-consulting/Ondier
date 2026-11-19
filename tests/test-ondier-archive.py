@@ -248,6 +248,7 @@ class OndierArchiveTest(unittest.TestCase):
                     break
                 time.sleep(.05)
             self.assertEqual((1, 1, 1), (result['done'], result['total'], result['duplicates']))
+            sync_device = server.SYNC_DEVICES.issue('Old phone')
             request('/api/backup', 403, headers=bearer)
             backup.write_bytes(request('/api/backup', headers=cookie))
         finally:
@@ -260,7 +261,9 @@ class OndierArchiveTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             backups.restore(backup, podcasts.ROOT, wrong_key, verify=True)
         podcasts.save(original_state)
+        server.SYNC_DEVICES.revoke(sync_device['id'])
         backups.restore(backup, podcasts.ROOT, server.KEY)
+        self.assertFalse(server.SYNC_DEVICES.authenticate(sync_device['password']))
         restored = podcasts.load()
         self.assertIn(smart['id'], restored['playlists'])
         self.assertTrue(restored['progress'][episode['id']]['finished'])

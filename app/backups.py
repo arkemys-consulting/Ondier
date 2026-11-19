@@ -17,6 +17,7 @@ import time
 import podcasts
 from accounts import Accounts
 from archive import Archive, DATABASE
+from sync_devices import SyncDevices
 
 FILES = ('state.json', 'accounts.sqlite3', DATABASE)
 SQLITE_FILES = FILES[1:]
@@ -115,6 +116,8 @@ def restore(source, root, key, *, verify=False):
             return index
         Accounts(root)
         Archive(root)
+        # Sync grants are local to the installation. A restore must never revive a revoked one.
+        SyncDevices(root)
         folder = root / 'backups'
         folder.mkdir(mode=0o700, exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S-%f')

@@ -26,11 +26,19 @@ RSS subscriptions and Apple Podcasts search work without a YouTube API key. To e
 
 Open a show, then **Show Settings → Video Matching** to choose a YouTube channel or France.tv catalogue, provider order, and matching rules. Use **Edit Video Match** in an episode’s options for a manual override. Playback availability depends on the publisher and the viewer’s region.
 
+## Podcast sync devices
+
+In **Settings → Sync Setup**, create a named app password for each gPodder reader. For Nextcloud gPodder Sync, start the connection in the reader and name the device when you approve it in Ondier. To disconnect one reader, select **Revoke** next to its name. The other readers keep their access.
+
+After upgrading, readers already using the old shared password stay connected as **Legacy shared access**. Reconnect each reader with its own password before revoking that shared entry if you want to keep it connected.
+
 ## What is stored
 
 `data/` contains subscriptions, playback state, indexed episode metadata, account records, API-key hashes, cached feeds, video matches, and backups. The installation key stays in `.env`.
 
 The episode archive preserves metadata, not a permanent copy of every publisher’s audio file. A removed or expired media URL may stop playing even when its episode remains searchable.
+
+Sync device passwords are stored as hashes in `data/sync-devices.sqlite3`, separately from backups. Restoring on the same installation retains the current devices and revocations. On a new installation, reconnect the readers after restoring.
 
 ## Backups and restore
 

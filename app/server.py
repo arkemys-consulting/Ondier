@@ -20,6 +20,7 @@ import time
 
 from accounts import Accounts
 from archive import Archive, PLAYLISTS, parse_opml, playlist_payload
+from sync_devices import SyncDevices
 import backups
 import feeds
 import listening
@@ -30,7 +31,7 @@ import podcast_youtube_audio as youtube
 import video_matching
 
 WEB = Path(__file__).parent / 'web'
-VERSION = '1.2.1'
+VERSION = '1.2.2'
 EDITORIAL = Path(__file__).parent / 'editorial'
 ORIGIN = os.environ['ONDIER_ORIGIN'].rstrip('/')
 OWNER = os.environ.get('ONDIER_OWNER', '').casefold()
@@ -467,6 +468,20 @@ class Handler(BaseHTTPRequestHandler):
         if method == 'DELETE' and re.fullmatch(r'/api/account/keys/[0-9a-f]{32}', path):
             if ACCOUNTS.revoke(path.rsplit('/', 1)[-1]):
                 return self.reply(200, {'ok': True})
+        if path == '/api/account/sync-devices':
+            if method == 'GET':
+                return self.reply(200, {'server': ORIGIN, 'username': 'ondier', 'devices': SYNC_DEVICES.list(),
+                                        'legacyEnabled': SYNC_DEVICES.legacy_enabled()})
+            if method == 'POST':
+                body = self.read_json()
+                name = body.get('name') if isinstance(body, dict) else None
+                return self.reply(201, SYNC_DEVICES.issue(name))
+        if method == 'DELETE' and path == '/api/account/sync-devices/legacy':
+            SYNC_DEVICES.disable_legacy()
+            return self.reply(200, {'ok': True})
+        if method == 'DELETE' and re.fullmatch(r'/api/account/sync-devices/[0-9a-f]{32}', path):
+            if SYNC_DEVICES.revoke(path.rsplit('/', 1)[-1]):
+                return self.reply(200, {'ok': True})
         raise LookupError
 
     def owner(self):
@@ -474,14 +489,27 @@ class Handler(BaseHTTPRequestHandler):
             self.headers.get('Tailscale-User-Login', '').casefold().encode(), OWNER.encode())
 
     def sync_auth(self):
+        """Return the revocable session credential for the authenticated sync client."""
         try:
             header = self.headers.get('Authorization', '')
             if header.startswith('Basic '):
-                return hmac.compare_digest(b64decode(header[6:], validate=True), ('ondier:' + sync_password()).encode())
+                user, _, password = b64decode(header[6:], validate=True).decode('ascii').partition(':')
+                if user != 'ondier':
+                    return None
+                if SYNC_DEVICES.authenticate(password):
+                    return password
+                if hmac.compare_digest(password, sync_password()) and SYNC_DEVICES.legacy_enabled():
+                    return sync_cookie()
+                return None
             cookie = SimpleCookie(self.headers.get('Cookie', '')).get('ondier_sync')
-            return cookie is not None and hmac.compare_digest(cookie.value, sync_cookie())
+            if cookie and cookie.value.isascii():
+                if SYNC_DEVICES.authenticate(cookie.value):
+                    return cookie.value
+                if hmac.compare_digest(cookie.value, sync_cookie()) and SYNC_DEVICES.legacy_enabled():
+                    return cookie.value
         except (ValueError, CookieError):
-            return False
+            pass
+        return None
 
     def read_json(self, limit=262_144):
         length = int(self.headers.get('Content-Length', 0))
@@ -542,10 +570,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.native(path, query)
             if path == '/api/account' or path.startswith('/api/account/'):
                 return self.account_api(path)
-            if self.api_account():
-                if path == '/api/sync-settings':
-                    return self.reply(403, {'error': 'Open Sync setup in the Ondier web app.'})
-            else:
+            if not self.api_account():
                 if not self.session_account():
                     return self.reply(401, {'error': 'Sign in to Ondier.'})
                 if self.command in ('POST', 'PUT', 'DELETE') and self.headers.get('Origin') != ORIGIN:
@@ -738,8 +763,6 @@ class Handler(BaseHTTPRequestHandler):
                 return self.reply(200, {'episodes':continue_episodes()})
             if path == '/library.opml':
                 return self.send_body(200, opml(current()['subscriptions']), 'text/x-opml; charset=utf-8')
-            if path == '/api/sync-settings':
-                return self.reply(200, {'server':ORIGIN,'username':'ondier','password':sync_password()})
             if path == '/api/search':
                 if query.get('source') == 'youtube':
                     return self.reply(*youtube.search_channels(query.get('q', '')))
@@ -905,7 +928,8 @@ class Handler(BaseHTTPRequestHandler):
                     self.wfile.write(block)
 
     def gpodder(self, path, query):
-        if not self.sync_auth():
+        credential = self.sync_auth()
+        if not credential:
             self.send_response(401)
             self.send_header('WWW-Authenticate', 'Basic realm="Ondier Sync"')
             self.send_header('Content-Length', '0')
@@ -916,7 +940,7 @@ class Handler(BaseHTTPRequestHandler):
         state = current()
         if self.command == 'POST' and path == '/api/2/auth/ondier/login.json':
             self.send_response(200)
-            self.send_header('Set-Cookie', f'ondier_sync={sync_cookie()}; Path=/api/2;{COOKIE_SECURE} HttpOnly; SameSite=Strict')
+            self.send_header('Set-Cookie', f'ondier_sync={credential}; Path=/api/2;{COOKIE_SECURE} HttpOnly; SameSite=Strict')
             self.send_header('Content-Length', '0')
             return self.end_headers()
         if self.command == 'POST' and path.startswith('/api/2/devices/ondier/'):
@@ -972,6 +996,19 @@ class Handler(BaseHTTPRequestHandler):
         raise LookupError
 
     def nextcloud_login(self, path):
+        match = LOGIN.fullmatch(path)
+        polling = self.command == 'POST' and path.endswith('/poll')
+        if polling or (match and self.command == 'POST'):
+            if match and (not self.session_account() or self.headers.get('Origin') != ORIGIN):
+                return self.reply(403, {'error': 'Authorize this device from the Ondier web app.'})
+            size = int(self.headers.get('Content-Length', 0))
+            if not 0 <= size <= 4096 or self.headers.get('Transfer-Encoding'):
+                raise ValueError('Invalid sync connection request.')
+            form = parse_qs(self.rfile.read(size).decode(), max_num_fields=2)
+            if polling:
+                token = form.get('token', [''])[0]
+            else:
+                name = SYNC_DEVICES.validate_name(form.get('name', ['Nextcloud Sync'])[0])
         with LOGIN_LOCK:
             now = time.time()
             for old in list(LOGINS):
@@ -982,18 +1019,15 @@ class Handler(BaseHTTPRequestHandler):
                     return self.reply(429, {'error':'Try again later.'})
                 token = secrets.token_urlsafe(24)
                 view = secrets.token_urlsafe(24)
-                LOGINS[token] = {'view':view, 'expires':now+600, 'accepted':False}
+                LOGINS[token] = {'view':view, 'expires':now+600, 'deviceName':None}
                 return self.reply(200, {'poll':{'token':token,'endpoint':ORIGIN+'/index.php/login/v2/poll'},'login':ORIGIN+'/connect/'+view})
-            if self.command == 'POST' and path.endswith('/poll'):
-                size = int(self.headers.get('Content-Length', 0))
-                if not 0 < size <= 4096:
-                    raise ValueError('Invalid login poll.')
-                token = parse_qs(self.rfile.read(size).decode(), max_num_fields=2).get('token', [''])[0]
-                if token not in LOGINS or not LOGINS[token]['accepted']:
+            if polling:
+                if token not in LOGINS or not LOGINS[token]['deviceName']:
                     raise LookupError
+                device = SYNC_DEVICES.issue(LOGINS[token]['deviceName'])
                 del LOGINS[token]
-                return self.reply(200, {'server':ORIGIN,'loginName':'ondier','appPassword':sync_password()})
-            if match := LOGIN.fullmatch(path):
+                return self.reply(200, {'server':ORIGIN,'loginName':'ondier','appPassword':device['password']})
+            if match:
                 flow = next((flow for flow in LOGINS.values() if flow['view'] == match[1]), None)
                 if flow is None:
                     raise LookupError
@@ -1005,9 +1039,11 @@ class Handler(BaseHTTPRequestHandler):
                     self.send_header('Content-Length', '0')
                     return self.end_headers()
                 if self.command == 'GET':
-                    body = '<h1>Connect to Ondier</h1><form method="post"><button>Authorize podcast sync</button></form>'
-                elif self.command == 'POST' and self.headers.get('Origin') == ORIGIN:
-                    flow['accepted'] = True
+                    body = ('<h1>Connect to Ondier</h1><form method="post" class="account-form">'
+                            '<label>Device name <input name="name" maxlength="80" placeholder="Nextcloud Sync"></label>'
+                            '<button>Authorize podcast sync</button></form>')
+                elif self.command == 'POST':
+                    flow['deviceName'] = name
                     body = '<h1>Connected</h1><p>Return to your podcast app.</p>'
                 else:
                     return self.reply(403, {'error':'Invalid login request.'})
@@ -1054,6 +1090,7 @@ def main():
 
 
 ACCOUNTS = Accounts(podcasts.ROOT)
+SYNC_DEVICES = SyncDevices(podcasts.ROOT, allow_legacy=ACCOUNTS.initialized())
 ARCHIVE = Archive(podcasts.ROOT)
 
 if __name__ == '__main__':

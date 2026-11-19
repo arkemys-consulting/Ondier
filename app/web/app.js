@@ -1129,15 +1129,97 @@ async function signOut() {
   } catch(error) { showError(error); }
 }
 async function syncSetup() {
-  dc.replaceChildren(node('h2','Sync setup'),status('Loading…'));dialog.showModal();
+  const heading = node('h2', 'Sync Setup');
+  const loading = status('Loading…');
+  openDialog(heading, loading);
   try {
-    const data=await api('/api/sync-settings');dc.replaceChildren(node('h2','Sync setup'),node('p','In a compatible podcast app, choose gPodder Sync or Nextcloud gPodder Sync.'));
-    for(const [label,key] of [['Server','server'],['Username','username'],['App password','password']]){
-      const input=node('input');input.value=data[key];input.readOnly=true;input.type=key==='password'?'password':'text';
-      const field=node('label',label);field.append(input);dc.append(field);
-      if(key==='password')dc.append(button('Show password',event=>{input.type=input.type==='password'?'text':'password';event.currentTarget.textContent=input.type==='password'?'Show password':'Hide password';}));
+    const path = '/api/account/sync-devices';
+    const data = await api(path);
+    if (!dialog.open || !signedIn || !loading.isConnected) return;
+    const form = node('form', '', 'account-form');
+    const label = node('label', 'Device name');
+    const name = node('input');
+    name.required = true; name.maxLength = 80; name.placeholder = 'Phone or podcast app';
+    label.append(name);
+    const create = node('button', 'Create App Password', 'add');
+    form.append(label, create);
+    const list = node('ul', '', 'rows');
+    const issued = node('div', '', 'stack');
+    const note = status('');
+    const empty = node('p', 'No devices connected.');
+    const updateEmpty = () => { empty.hidden = list.childElementCount > 0; };
+    const details = node('div', '', 'account-form');
+    for (const [text, value] of [['Server', data.server], ['Username', data.username]]) {
+      const field = node('label', text);
+      const input = node('input');
+      input.value = value; input.readOnly = true;
+      field.append(input); details.append(field);
     }
-  }catch(error){dc.replaceChildren(status(error.message));}
+
+    function deviceRow(record) {
+      const row = node('li', '', 'row');
+      const info = node('div');
+      const legacy = record.id === 'legacy';
+      info.append(node('strong', record.name), node('small', legacy ? 'Shared by all readers connected before device passwords.'
+        : `Added ${new Date(record.created * 1000).toLocaleDateString()}`));
+      const revoke = button('Revoke', async () => {
+        const message = legacy ? 'Revoke the shared password for all older readers? They will need to reconnect.'
+          : `Revoke access for “${record.name}”?`;
+        if (!confirm(message)) return;
+        revoke.disabled = true;
+        try {
+          await api(path + '/' + record.id, undefined, 'DELETE');
+          if (!row.isConnected) return;
+          if (issued.dataset.id === record.id) issued.replaceChildren();
+          const next = row.nextElementSibling?.querySelector('button') ?? name;
+          row.remove();
+          updateEmpty();
+          note.textContent = legacy ? 'Shared password revoked.' : 'Device access revoked.';
+          if (dialog.open) next.focus();
+        } catch (error) { note.textContent = error.message; revoke.disabled = false; }
+      }, 'danger');
+      revoke.setAttribute('aria-label', `Revoke ${record.name}`);
+      row.append(info, revoke);
+      return row;
+    }
+    list.append(...data.devices.map(deviceRow));
+    if (data.legacyEnabled) list.append(deviceRow({id: 'legacy', name: 'Legacy shared access'}));
+    updateEmpty();
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      create.disabled = true;
+      note.textContent = '';
+      issued.replaceChildren();
+      try {
+        const record = await api(path, {name: name.value});
+        if (!dialog.open || !signedIn || !form.isConnected) return;
+        const value = node('input');
+        value.type = 'password'; value.value = record.password; value.readOnly = true;
+        value.setAttribute('aria-label', 'New app password');
+        issued.dataset.id = record.id;
+        issued.replaceChildren(node('p', 'Save this app password now. It is shown only once.'), value,
+          button('Show password', event => {
+            const masked = value.type === 'password';
+            value.type = masked ? 'text' : 'password';
+            event.currentTarget.textContent = masked ? 'Hide password' : 'Show password';
+          }),
+          button('Copy App Password', async () => {
+            try { await navigator.clipboard.writeText(value.value); note.textContent = 'App password copied.'; }
+            catch {
+              value.type = 'text'; value.focus(); value.select();
+              note.textContent = 'Use your keyboard to copy the selected password.';
+            }
+          }));
+        list.prepend(deviceRow(record));
+        updateEmpty();
+        name.value = '';
+        value.focus();
+      } catch (error) { note.textContent = error.message; }
+      finally { create.disabled = false; }
+    });
+    dc.replaceChildren(heading, node('p', 'Create a password for each gPodder reader, or authorize the device from a Nextcloud Sync app.'),
+      details, form, issued, node('h3', 'Devices'), empty, list, note);
+  } catch (error) { if (dialog.open && loading.isConnected) dc.replaceChildren(heading, status(error.message)); }
 }
 function openDialog(...contents) {
   dc.replaceChildren(...contents);

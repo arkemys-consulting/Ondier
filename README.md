@@ -65,7 +65,7 @@ The [self-hosting guide](docs/SELF-HOSTING.md) covers another port, HTTPS and re
 
 **Roan.** In Ondier, open **Settings → API Keys** and create a named key. Enter your Ondier address and that key in Roan’s Ondier settings. Roan can use the shared library, playback positions, saved episodes, queue and video preferences.
 
-**gPodder-compatible apps.** Open **Settings → Sync Setup** for the server address and app password. Ondier supports the gPodder API and a Nextcloud gPodder Sync login flow.
+**gPodder-compatible apps.** Open **Settings → Sync Setup** for the server address and create an app password for each device. Nextcloud gPodder Sync apps can authorize a device through the browser. Select **Revoke** next to a device to disconnect it.
 
 **Other RSS players.** Use **RSS Feed** on a show or **Private RSS Feed** on a playlist. RSS carries the feed and episodes; playback-state sync requires a compatible client.
 
