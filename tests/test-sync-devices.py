@@ -64,6 +64,19 @@ class SyncDeviceTest(unittest.TestCase):
         request(device_path, 401)
         request(device_path, 401, headers={'Authorization': 'Bearer ' + key})
         request(device_path, 403, method='POST', headers={'Cookie': account['Cookie']}, data={'name': 'Phone'})
+
+        trailer = '/trailers/video-stream?v=ABCDEFGHIJK'
+        native_auth = {'Authorization': 'Bearer ' + key}
+        stream = {'path': '/podcasts/streams/' + 'a' * 48 + '/0.m3u8', 'duration': 90}
+        with patch.object(server.podcast_streams, 'open_youtube_video', return_value=(200, stream)) as resolve:
+            request(trailer, 401)
+            invalid = '/trailers/video-stream?' + urlencode({'v': 'https://example.test/video'})
+            request(invalid, 400, headers=native_auth)
+            resolve.assert_not_called()
+            result, _ = request(trailer, 200, headers=native_auth)
+            self.assertEqual(result, stream)
+            resolve.assert_called_once_with('ABCDEFGHIJK')
+
         legacy = basic(server.sync_password())
         request(sync_path, 200, headers=legacy)
         _, legacy_cookie = request(login_path, 200, method='POST', headers=legacy)

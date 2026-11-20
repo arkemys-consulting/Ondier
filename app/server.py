@@ -564,7 +564,7 @@ class Handler(BaseHTTPRequestHandler):
                 account = self.api_account()
                 return self.reply(200, {'service': 'Ondier', **account}) if account else self.reply(
                     401, {'error': 'A valid Ondier API key is required.'})
-            if path.startswith('/podcasts/') or path == '/documentaries/video-stream':
+            if path.startswith('/podcasts/') or path in ('/documentaries/video-stream', '/trailers/video-stream'):
                 if not (self.bridge() or self.api_account()):
                     return self.reply(401, {'error':'An access token is required.'})
                 return self.native(path, query)
@@ -644,6 +644,11 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/podcasts/video-stream':
             return self.reply(*podcast_streams.open_stream(query.get('v', ''), desktop=query.get('profile') == 'mpv',
                                                          index=video_matching.endpoint()))
+        if path == '/trailers/video-stream' and self.command == 'GET':
+            video = query.get('v', '')
+            if not podcast_videos.VIDEO_ID.fullmatch(video):
+                return self.reply(400, {'error': 'Invalid YouTube trailer ID.'})
+            return self.reply(*podcast_streams.open_youtube_video(video))
         if path == '/podcasts/video-links':
             return self.reply(200, video_matching.endpoint())
         raise LookupError
